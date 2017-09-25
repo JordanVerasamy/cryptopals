@@ -33,13 +33,25 @@ def decode_single_byte_xor(cipher: bytearray):
     english_plaintext = ''
     for key in bytearray(range(256)):
         plaintext = bytearray()
+
         for c in cipher:
             plaintext.append(c ^ key)
+
         score = plaintext_score(plaintext.decode('cp437'))
 
         if score > max_score:
             max_score = score
             english_plaintext = plaintext.decode('cp437')
-    return english_plaintext
 
-print(decode_single_byte_xor(bytearray.fromhex(hex_encoded)))
+    return (english_plaintext, max_score)
+
+def find_single_byte_encrypted_xor(ciphers):
+    lis = list(map(decode_single_byte_xor, ciphers))
+    return max(lis, key=lambda item:item[1])
+
+with open('set1ch4.txt') as f:
+    hex_encoded_list = f.read()
+
+x = list(map(bytearray.fromhex, hex_encoded_list.split('\n')))
+
+print(find_single_byte_encrypted_xor(x))
